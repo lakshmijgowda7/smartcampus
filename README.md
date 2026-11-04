@@ -1,6 +1,6 @@
 # Smart Campus Management System
 
-A console-based Java application for managing students, faculty, and courses in a MySQL database.
+A console-based Java application for managing campus data and resources.
 
 ## Architecture
 
@@ -10,7 +10,10 @@ A console-based Java application for managing students, faculty, and courses in 
 - `DatabaseConnection` reads connection settings from environment variables; `DatabaseException` reports database errors.
 - `Student`, `Faculty`, and `Course` are the domain models. `ManagementOperations` defines the common service contract.
 - `database-schema.sql` creates the database and tables.
-- `FileManager.java` provides CSV file utilities. The running application uses MySQL; the CSV files in `data/` are retained as project data/templates.
+- `FileManager.java` provides CSV file utilities. The student/faculty/course application uses MySQL; the CSV files in `data/` are retained as project data/templates.
+- `ResourceService` is a second console entry point for accounts, resources, bookings, and campus activities. Its services keep data in memory for the current run.
+- `UserAuthService` handles in-memory accounts and password hashing; `CampusActivityService` and `ResourceBookingService` handle their respective operations.
+- The `*Test.java` files are executable test programs for the resource, booking, authentication, and activity modules.
 
 ## Requirements
 
@@ -29,11 +32,20 @@ A console-based Java application for managing students, faculty, and courses in 
    $env:SMART_CAMPUS_DB_PASSWORD = "your_mysql_password"
    ```
 
-3. Compile and run from the project directory, replacing the connector path with the location of your MySQL Connector/J JAR:
+3. Compile from the project directory. To run the student/faculty/course application, replace the connector path with the location of your MySQL Connector/J JAR:
 
    ```powershell
    javac -cp ".;C:\path\to\mysql-connector-j.jar" *.java
    java -cp ".;C:\path\to\mysql-connector-j.jar" Main
    ```
+
+The resource and activity application can be started without the database using `java ResourceService`. After compiling, run the included test programs with:
+
+```powershell
+java CampusActivityServiceTest
+java ResourceBookingServiceTest
+java ResourceServiceTest
+java UserAuthServiceTest
+```
 
 Do not commit database credentials. The application reads them from the environment at runtime.
