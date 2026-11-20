@@ -10,10 +10,19 @@ public final class ResourceBooking {
     private final String resourceName;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
+    private final long userId;
+    private final long resourceDatabaseId;
+    private String status;
     private boolean cancelled;
 
     public ResourceBooking(String bookingId, Resource resource,
                            LocalDateTime startTime, LocalDateTime endTime) {
+        this(bookingId, resource, startTime, endTime, "PENDING", -1L, -1L);
+    }
+
+    public ResourceBooking(String bookingId, Resource resource,
+                           LocalDateTime startTime, LocalDateTime endTime,
+                           String status, long userId, long resourceDatabaseId) {
         if (bookingId == null || bookingId.trim().isEmpty()) {
             throw new IllegalArgumentException("Booking ID cannot be empty.");
         }
@@ -29,7 +38,10 @@ public final class ResourceBooking {
         this.resourceName = resource.getResourceName();
         this.startTime = startTime;
         this.endTime = endTime;
-        this.cancelled = false;
+        this.userId = userId;
+        this.resourceDatabaseId = resourceDatabaseId;
+        this.status = status == null ? "PENDING" : status.toUpperCase();
+        this.cancelled = "CANCELLED".equalsIgnoreCase(this.status);
     }
 
     public String getBookingId() {
@@ -38,6 +50,23 @@ public final class ResourceBooking {
 
     public String getResourceId() {
         return resourceId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public long getResourceDatabaseId() {
+        return resourceDatabaseId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status == null ? "PENDING" : status.toUpperCase();
+        this.cancelled = "CANCELLED".equalsIgnoreCase(this.status);
     }
 
     public LocalDateTime getStartTime() {
@@ -53,7 +82,7 @@ public final class ResourceBooking {
     }
 
     public void cancel() {
-        cancelled = true;
+        setStatus("CANCELLED");
     }
 
     public boolean overlaps(LocalDateTime requestedStart, LocalDateTime requestedEnd) {
@@ -66,6 +95,6 @@ public final class ResourceBooking {
                 + " | Resource: " + resourceName
                 + " | Start: " + startTime.format(DISPLAY_FORMAT)
                 + " | End: " + endTime.format(DISPLAY_FORMAT)
-                + " | Status: " + (cancelled ? "Cancelled" : "Active"));
+                + " | Status: " + (cancelled ? "Cancelled" : status));
     }
 }

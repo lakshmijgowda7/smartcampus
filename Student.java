@@ -1,12 +1,20 @@
+
 public class Student extends Person {
     private String studentId;
+    private String email;
     private String branch;
     private String section;
     private int semester;
 
     public Student(String studentId, String studentName, String branch, String section, int semester) {
+        this(studentId, studentName, "", branch, section, semester);
+    }
+
+    public Student(String studentId, String studentName, String email,
+                   String branch, String section, int semester) {
         super(studentName);
         setStudentId(studentId);
+        setEmail(email);
         setBranch(branch);
         setSection(section);
         setSemester(semester);
@@ -17,7 +25,7 @@ public class Student extends Person {
     }
 
     public void setStudentId(String studentId) {
-        this.studentId = requireText(studentId, "Student ID");
+        this.studentId = requireText(studentId, "Student USN");
     }
 
     public String getStudentName() {
@@ -28,12 +36,20 @@ public class Student extends Person {
         setName(studentName);
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email == null ? "" : email.trim();
+    }
+
     public String getBranch() {
         return branch;
     }
 
     public void setBranch(String branch) {
-        this.branch = requireText(branch, "Branch");
+        this.branch = requireText(branch, "Department");
     }
 
     public String getSection() {
@@ -41,11 +57,16 @@ public class Student extends Person {
     }
 
     public void setSection(String section) {
-        String normalizedSection = requireText(section, "Section").toUpperCase();
-        if (!normalizedSection.equals("A") && !normalizedSection.equals("B") && !normalizedSection.equals("C")) {
+        if (section == null || section.trim().isEmpty()) {
+            this.section = null;
+            return;
+        }
+
+        String normalized = section.trim().toUpperCase();
+        if (!normalized.equals("A") && !normalized.equals("B") && !normalized.equals("C")) {
             throw new IllegalArgumentException("Section must be A, B, or C.");
         }
-        this.section = normalizedSection;
+        this.section = normalized;
     }
 
     public int getSemester() {
@@ -73,10 +94,11 @@ public class Student extends Person {
 
     @Override
     public String toString() {
-        return "Student ID: " + studentId
+        return "Student USN: " + studentId
                 + " | Name: " + getName()
-                + " | Branch: " + branch
-                + " | Section: " + section
+                + " | Email: " + (email.isEmpty() ? "Not set" : email)
+                + " | Department: " + branch
+                + " | Section: " + (section == null ? "Not set" : section)
                 + " | Semester: " + semester;
     }
 }
